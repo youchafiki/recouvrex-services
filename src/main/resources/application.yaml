@@ -1,0 +1,53 @@
+
+spring:
+ datasource:
+  url: jdbc:postgresql://192.168.43.248:5432/recouvrex
+  driver-class-name: org.postgresql.Driver
+  username: postgresadmin
+  password: password
+
+ #security.oauth2.resourceserver.jwt.issuer-uri: http://192.168.43.248:8080/auth/realms/recouvrex
+ #security.oauth2.resourceserver.jwt.jwk-set-uri: http://192.168.43.248:8080/auth/realms/recouvrex/protocol/openid-connect/certs
+
+ jpa:
+   hibernate:
+     ddl-auto: update
+     show-sql: 'true'
+   database-platform: org.hibernate.dialect.PostgreSQLDialect
+   datasource:
+     type: com.zaxxer.hikari.HikariDataSource
+     url: jdbc:postgresql://192.168.43.248:5432/recouvrex
+     driver-class-name: org.postgresql.Driver
+     username: postgresadmin
+     password: password
+
+
+camunda:
+  bpm:
+    generic-properties:
+      properties:
+        historyTimeToLive: P1D
+    enabled: true
+    admin-user:
+      id: demo
+      password: demo
+      email: ufo@andromeda.com
+      first-name: Andromeda
+      last-name: Galaxy
+    database:
+      schema-update: true
+    filter:
+      create: All
+    authorization:
+      enabled: true
+    history-level: full
+    auto-deployment-enabled: true
+    default-number-of-retries: 3
+    job-execution:
+      enabled: true
+    webapp:
+      application-path: /camunda
+springdoc:
+  swagger-ui:
+    path: /api
+    operations-sorter: method
