@@ -1,6 +1,7 @@
 package com.recouvrex.process.repository;
 
 import com.recouvrex.process.model.Case;
+import com.recouvrex.process.model.User;
 import com.recouvrex.process.model.enums.StatusEnum;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,14 +9,10 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface UserRepository extends JpaRepository <Case, Long> {
+public interface UserRepository extends JpaRepository <User, Long> {
 
-	List<Case> findByCaseId(String caseId);
+	List<User> findByIdentificationNumber(String identificationNumber);
 
-	@Query("SELECT c from Case c WHERE c.status = :status")
-	List<Case> findByStatus(@Param("status") StatusEnum status);
-
-	@Query(value = "SELECT * FROM collect_case c WHERE LOWER(c.case_id) LIKE LOWER(CONCAT('%', :caseId,'%')) AND (c.status_id) = :statusId AND (c.procedure_id) = :procedureId", nativeQuery = true)
-	List<Case> findByCaseIdContainingAndStatusAndProcedure(String caseId, Long statusId, Long procedureId);
-	
+	@Query(value = "SELECT * FROM user u WHERE  u.profile_id = :profileId", nativeQuery = true)
+	List<Case> findByProfile(Long profileId);
 }

@@ -43,14 +43,6 @@ public class TutorialController {
 	@Autowired
 	TutorialService tutorialService;
 
-	@Autowired
-	RuntimeService runtimeService;
-
-	@Autowired
-	TaskService taskService;
-
-	@Autowired
-	ProcessEngine processInEngine;
 
 	@Operation(summary = "Create a new Tutorial", tags = { "tutorials", "post" }
 	, security = @SecurityRequirement(name = "bearerAuth"))
@@ -77,11 +69,6 @@ public class TutorialController {
 		UUID uuid = UUID.randomUUID();
 		String uuidAsString = uuid.toString();
 
-		ProcessInstanceWithVariables instance = runtimeService.createProcessInstanceByKey("revouvrex-process")
-				.businessKey(uuidAsString)
-				.setVariable("numeroDossier", uuidAsString)
-				.setVariable("statut", "premier douteux")
-				.executeWithVariablesInReturn();
 
 		return new ResponseEntity<>("Hello", HttpStatus.CREATED);
 
@@ -110,7 +97,7 @@ public class TutorialController {
 					@ApiResponse(responseCode = "500", content = { @Content(schema = @Schema()) }) })
 	@GetMapping("/tutorials/{id}")
 	public ResponseEntity<Tutorial> getTutorialById(@PathVariable("id") long id) {
-		Tutorial tutorial = tutorialService.findById(id).get();
+		Tutorial tutorial = tutorialService.findById(id).orElse(null);
 
 		if (tutorial != null) {
 			return new ResponseEntity<>(tutorial, HttpStatus.OK);

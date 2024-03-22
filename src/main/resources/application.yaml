@@ -20,8 +20,10 @@ spring:
      driver-class-name: org.postgresql.Driver
      username: postgresadmin
      password: password
-
-
+   show-sql: true
+   properties:
+     hibernate:
+       format_sql:true
 camunda:
   bpm:
     generic-properties:
@@ -51,3 +53,4 @@ springdoc:
   swagger-ui:
     path: /api
     operations-sorter: method
+

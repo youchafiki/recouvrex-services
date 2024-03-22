@@ -1,6 +1,8 @@
 package com.recouvrex.process.controller;
 
+import com.recouvrex.process.model.Task;
 import com.recouvrex.process.model.Tutorial;
+import com.recouvrex.process.service.TaskService;
 import com.recouvrex.process.service.TutorialService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -25,83 +27,40 @@ import java.util.UUID;
 public class TaskController {
 
 	@Autowired
-	TutorialService tutorialService;
+	TaskService taskService;
 
 
-	@Operation(summary = "Create a new Tutorial", tags = { "tutorials", "post" }
+	@Operation(summary = "Create a new Tutorial", tags = { "task", "post" }
 	, security = @SecurityRequirement(name = "bearerAuth"))
 	@ApiResponses({
 					@ApiResponse(responseCode = "201", content = {
-									@Content(schema = @Schema(implementation = Tutorial.class), mediaType = "application/json") }),
+									@Content(schema = @Schema(implementation = Task.class), mediaType = "application/json") }),
 					@ApiResponse(responseCode = "500", content = { @Content(schema = @Schema()) }) })
-	@PostMapping("/tutorials")
-	public ResponseEntity<Tutorial> createTutorial(@RequestBody Tutorial tutorial) {
+	@PostMapping("/Task")
+	public ResponseEntity<Task> createTask(@RequestBody Task task) {
 		try {
-			Tutorial _tutorial = tutorialService.save(tutorial);
+			Task _task = taskService.save(task);
 
-			return new ResponseEntity<>(_tutorial, HttpStatus.CREATED);
+			return new ResponseEntity<>(_task, HttpStatus.CREATED);
 		} catch (Exception e) {
 			//e.printStackTrace();
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
-	@PostMapping("/test")
-	@Operation(summary = "Retrieve all Tutorials", tags = { "test", "post", "test" }
+	@Operation(summary = "Retrieve all Task by caseId", tags = { "Task", "post"}
 			, security = @SecurityRequirement(name = "bearerAuth"))
-	public ResponseEntity<String> createTutorial() {
-		UUID uuid = UUID.randomUUID();
-		String uuidAsString = uuid.toString();
-
-
-		return new ResponseEntity<>("Hello", HttpStatus.CREATED);
-
-	}
-
-	@Operation(summary = "Retrieve all Tutorials", tags = { "tutorials", "get", "filter" }
-	, security = @SecurityRequirement(name = "bearerAuth"))
 	@ApiResponses({
 					@ApiResponse(responseCode = "200", content = {
-									@Content(schema = @Schema(implementation = Tutorial.class), mediaType = "application/json") }),
-					@ApiResponse(responseCode = "204", description = "There are no Tutorials", content = {
+									@Content(schema = @Schema(implementation = Task.class), mediaType = "application/json") }),
+					@ApiResponse(responseCode = "204", description = "There are no Task this caseId", content = {
 									@Content(schema = @Schema()) }),
 					@ApiResponse(responseCode = "500", content = { @Content(schema = @Schema()) }) })
-	@GetMapping("/tutorials")
-	public ResponseEntity<List<Tutorial>> getAllTutorials(@RequestParam(required = false) String title) {
-			return new ResponseEntity<>(tutorialService.findAll(), HttpStatus.OK);
+	@GetMapping("/task/{caseId}")
+	public ResponseEntity<List<Task>> getTaskByCaseId(@PathVariable("caseId") Long CaseId) {
+		return new ResponseEntity<>(taskService.findByCaseId(CaseId), HttpStatus.OK);
 	}
-
-	@Operation(
-					summary = "Retrieve a Tutorial by Id",
-					description = "Get a Tutorial object by specifying its id. The response is Tutorial object with id, title, description and published status.",
-					tags = { "tutorials", "get" }, security = @SecurityRequirement(name = "bearerAuth"))
-	@ApiResponses({
-					@ApiResponse(responseCode = "200", content = { @Content(schema = @Schema(implementation = Tutorial.class), mediaType = "application/json") }),
-					@ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
-					@ApiResponse(responseCode = "500", content = { @Content(schema = @Schema()) }) })
-	@GetMapping("/tutorials/{id}")
-	public ResponseEntity<Tutorial> getTutorialById(@PathVariable("id") long id) {
-		Tutorial tutorial = tutorialService.findById(id).get();
-
-		if (tutorial != null) {
-			return new ResponseEntity<>(tutorial, HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-	}
-
-	@Operation(summary = "Update a Tutorial by Id", tags = { "tutorials", "put" }
-	,security = @SecurityRequirement(name = "bearerAuth"))
-	@ApiResponses({
-					@ApiResponse(responseCode = "200", content = {
-									@Content(schema = @Schema(implementation = Tutorial.class), mediaType = "application/json") }),
-					@ApiResponse(responseCode = "500", content = { @Content(schema = @Schema()) }),
-					@ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }) })
-	@PutMapping("/tutorials/{id}")
-	public ResponseEntity<Tutorial> updateTutorial(@PathVariable("id") long id, @RequestBody Tutorial tutorial) {
-			return new ResponseEntity<>(tutorialService.save(tutorial), HttpStatus.OK);
-	}
-
+	/*
 	@Operation(summary = "Delete a Tutorial by Id", tags = { "tutorials", "delete" },
 			security = @SecurityRequirement(name = "bearerAuth"))
 	@ApiResponses({ @ApiResponse(responseCode = "204", content = { @Content(schema = @Schema()) }),
@@ -149,5 +108,5 @@ public class TaskController {
 			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-	}
+	}*/
 }

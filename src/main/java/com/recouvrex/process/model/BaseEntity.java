@@ -1,15 +1,10 @@
 package com.recouvrex.process.model;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.io.Serializable;
-
+@Data
 @Setter
 @Getter
 @MappedSuperclass
