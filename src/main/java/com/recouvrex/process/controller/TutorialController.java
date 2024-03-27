@@ -44,7 +44,7 @@ public class TutorialController {
 	TutorialService tutorialService;
 
 
-	@Operation(summary = "Create a new Tutorial", tags = { "tutorials", "post" }
+	@Operation(summary = "Create a new Tutorial"
 	, security = @SecurityRequirement(name = "bearerAuth"))
 	@ApiResponses({
 					@ApiResponse(responseCode = "201", content = {
@@ -63,7 +63,7 @@ public class TutorialController {
 	}
 
 	@PostMapping("/test")
-	@Operation(summary = "Retrieve all Tutorials", tags = { "test", "post", "test" }
+	@Operation(summary = "Retrieve all Tutorials"
 			, security = @SecurityRequirement(name = "bearerAuth"))
 	public ResponseEntity<String> createTutorial() {
 		UUID uuid = UUID.randomUUID();
@@ -74,7 +74,7 @@ public class TutorialController {
 
 	}
 
-	@Operation(summary = "Retrieve all Tutorials", tags = { "tutorials", "get", "filter" }
+	@Operation(summary = "Retrieve all Tutorials"
 	, security = @SecurityRequirement(name = "bearerAuth"))
 	@ApiResponses({
 					@ApiResponse(responseCode = "200", content = {
@@ -90,7 +90,7 @@ public class TutorialController {
 	@Operation(
 					summary = "Retrieve a Tutorial by Id",
 					description = "Get a Tutorial object by specifying its id. The response is Tutorial object with id, title, description and published status.",
-					tags = { "tutorials", "get" }, security = @SecurityRequirement(name = "bearerAuth"))
+			        security = @SecurityRequirement(name = "bearerAuth"))
 	@ApiResponses({
 					@ApiResponse(responseCode = "200", content = { @Content(schema = @Schema(implementation = Tutorial.class), mediaType = "application/json") }),
 					@ApiResponse(responseCode = "404", content = { @Content(schema = @Schema()) }),
@@ -106,7 +106,7 @@ public class TutorialController {
 		}
 	}
 
-	@Operation(summary = "Update a Tutorial by Id", tags = { "tutorials", "put" }
+	@Operation(summary = "Update a Tutorial by Id"
 	,security = @SecurityRequirement(name = "bearerAuth"))
 	@ApiResponses({
 					@ApiResponse(responseCode = "200", content = {
@@ -118,7 +118,7 @@ public class TutorialController {
 			return new ResponseEntity<>(tutorialService.save(tutorial), HttpStatus.OK);
 	}
 
-	@Operation(summary = "Delete a Tutorial by Id", tags = { "tutorials", "delete" },
+	@Operation(summary = "Delete a Tutorial by Id",
 			security = @SecurityRequirement(name = "bearerAuth"))
 	@ApiResponses({ @ApiResponse(responseCode = "204", content = { @Content(schema = @Schema()) }),
 					@ApiResponse(responseCode = "500", content = { @Content(schema = @Schema()) }) })
@@ -132,7 +132,7 @@ public class TutorialController {
 		}
 	}
 
-	@Operation(summary = "Delete all Tutorials", tags = { "tutorials", "delete" }
+	@Operation(summary = "Delete all Tutorials"
 	, security = @SecurityRequirement(name = "bearerAuth"))
 	@ApiResponses({ @ApiResponse(responseCode = "204", content = { @Content(schema = @Schema()) }),
 					@ApiResponse(responseCode = "500", content = { @Content(schema = @Schema()) }) })
@@ -147,7 +147,7 @@ public class TutorialController {
 
 	}
 
-	@Operation(summary = "Retrieve all published Tutorials", tags = { "tutorials", "get", "filter" }
+	@Operation(summary = "Retrieve all published Tutorials"
 			,security = @SecurityRequirement(name = "bearerAuth"))
 	@ApiResponses({ @ApiResponse(responseCode = "200", content = { @Content(schema = @Schema()) }),
 			 @ApiResponse(responseCode = "204", content = { @Content(schema = @Schema()) }),

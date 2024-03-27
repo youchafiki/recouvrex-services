@@ -5,6 +5,7 @@ import com.recouvrex.process.model.Procedure;
 import com.recouvrex.process.model.Status;
 import com.recouvrex.process.model.Tutorial;
 import com.recouvrex.process.model.enums.FollowingActionEnum;
+import com.recouvrex.process.model.enums.ProcessingActionEnum;
 import com.recouvrex.process.service.CaseService;
 import com.recouvrex.process.service.TutorialService;
 import com.recouvrex.process.utils.IdentificationTool;
@@ -39,7 +40,7 @@ public class CaseController {
 	@Autowired
 	CaseService caseService;
 
-	@Operation(summary = "Create a new case", tags = { "case", "post" }
+	@Operation(summary = "Create a new case"
 	, security = @SecurityRequirement(name = "bearerAuth"))
 	@ApiResponses({
 					@ApiResponse(responseCode = "201", content = {
@@ -55,23 +56,54 @@ public class CaseController {
 		}
 	}
 
-	@Operation(summary = "follow case", tags = { "case", "post" , "follow"}
+	@Operation(summary = "follow case"
 			, security = @SecurityRequirement(name = "bearerAuth"))
 	@ApiResponses({
 			@ApiResponse(responseCode = "201", content = {
-					@Content(schema = @Schema(implementation = Tutorial.class), mediaType = "application/json") }),
+					@Content(schema = @Schema(implementation = Case.class), mediaType = "application/json") }),
 			@ApiResponse(responseCode = "500", content = { @Content(schema = @Schema()) }) })
-	@PutMapping("/follow/{caseId}/followingAction/{followingAction}")
-	public ResponseEntity<Case> decideOnAction(@PathVariable("caseId") String caseId, @PathVariable("followingAction") FollowingActionEnum followingAction) {
-		Case _case = caseService.decideOnAction(caseId, followingAction);
+	@PutMapping("/follow/{caseId}/followingAction/{followingAction}/status/{status}")
+	public ResponseEntity<Case> decideOnAction(@PathVariable("caseId") String caseId,
+											   @PathVariable("followingAction") FollowingActionEnum followingAction,
+											   @PathVariable("status") Long statusId){
+		Case _case = caseService.decideOnAction(caseId, followingAction, statusId);
 		return new ResponseEntity<>(_case, HttpStatus.OK);
 	}
 
-	@Operation(summary = "follow case", tags = { "case", "post" , "follow"}
+	@Operation(summary = "process the collect action"
 			, security = @SecurityRequirement(name = "bearerAuth"))
 	@ApiResponses({
 			@ApiResponse(responseCode = "201", content = {
-					@Content(schema = @Schema(implementation = Tutorial.class), mediaType = "application/json") }),
+					@Content(schema = @Schema(implementation = Case.class), mediaType = "application/json") }),
+			@ApiResponse(responseCode = "500", content = { @Content(schema = @Schema()) }) })
+	@PutMapping("/processAction/{caseId}/ProcessingAction/{processingAction}/status/{status}")
+	public ResponseEntity<Case> processCollectAction(@PathVariable("caseId") String caseId,
+											   @PathVariable("processingAction") ProcessingActionEnum processingAction,
+											   @PathVariable("status") Long statusId){
+		Case _case = caseService.processCollectAction(caseId, processingAction, statusId);
+		return new ResponseEntity<>(_case, HttpStatus.OK);
+	}
+
+	@Operation(summary = "decide on procedure"
+			, security = @SecurityRequirement(name = "bearerAuth"))
+	@ApiResponses({
+			@ApiResponse(responseCode = "201", content = {
+					@Content(schema = @Schema(implementation = Case.class), mediaType = "application/json") }),
+			@ApiResponse(responseCode = "500", content = { @Content(schema = @Schema()) }) })
+	@PutMapping("/decideOnProcedure/{caseId}/procedureId/{procedureId}/status/{status}/processingAction/{processingAction}")
+	public ResponseEntity<Case> decideOnProcedure(@PathVariable("caseId") String caseId,
+													 @PathVariable("procedureId") Long procedureId,
+													 @PathVariable("status") Long statusId,
+												  @PathVariable("processingAction") ProcessingActionEnum processingAction){
+		Case _case = caseService.processCollectAction(caseId, procedureId, statusId, processingAction);
+		return new ResponseEntity<>(_case, HttpStatus.OK);
+	}
+
+	@Operation(summary = "Filter on cases"
+			, security = @SecurityRequirement(name = "bearerAuth"))
+	@ApiResponses({
+			@ApiResponse(responseCode = "201", content = {
+					@Content(schema = @Schema(implementation = Case.class), mediaType = "application/json") }),
 			@ApiResponse(responseCode = "500", content = { @Content(schema = @Schema()) }) })
 	@GetMapping("/filter/{caseId}/status/{status}/procedure/{procedure}")
 	public ResponseEntity<List<Case>> filterCase(@PathVariable("caseId") String caseId, @PathVariable("status") Long statusId, @PathVariable("procedure") Long procedureId) {

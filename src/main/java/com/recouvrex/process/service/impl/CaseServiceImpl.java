@@ -2,6 +2,7 @@ package com.recouvrex.process.service.impl;
 
 import com.recouvrex.process.model.Case;
 import com.recouvrex.process.model.enums.FollowingActionEnum;
+import com.recouvrex.process.model.enums.ProcessingActionEnum;
 import com.recouvrex.process.model.enums.StatusEnum;
 import com.recouvrex.process.repository.CaseRepository;
 import com.recouvrex.process.service.CaseService;
@@ -83,9 +84,10 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public Case decideOnAction(String caseId, FollowingActionEnum followingAction) {
+    public Case decideOnAction(String caseId, FollowingActionEnum followingAction, Long statusId) {
         Execution execution = runtimeService.createExecutionQuery().processInstanceBusinessKey(caseId).singleResult();
         runtimeService.setVariable(execution.getId(), "followingAction", followingAction);
+        runtimeService.setVariable(execution.getId(), "statusId", statusId);
 
         Task task = processInEngine.getTaskService().createTaskQuery()
                 .processInstanceBusinessKey(caseId)
@@ -98,5 +100,25 @@ public class CaseServiceImpl implements CaseService {
     @Override
     public List<Case> filterCase(String caseId, Long statusId, Long procedureId){
         return  caseRepository.findByCaseIdContainingAndStatusAndProcedure( caseId, statusId, procedureId);
+    }
+
+    @Override
+    public Case processCollectAction(String caseId, ProcessingActionEnum processingAction, Long statusId) {
+        Execution execution = runtimeService.createExecutionQuery().processInstanceBusinessKey(caseId).singleResult();
+        runtimeService.setVariable(execution.getId(), "processingAction", processingAction);
+        runtimeService.setVariable(execution.getId(), "statusId", statusId);
+
+        Task task = processInEngine.getTaskService().createTaskQuery()
+                .processInstanceBusinessKey(caseId)
+                .taskDefinitionKey("process-collect-action")
+                .singleResult();
+
+        taskService.complete(task.getId());
+        return (Case) runtimeService.getVariable(execution.getId(), "case");
+    }
+
+    @Override
+    public Case processCollectAction(String caseId, Long procedureId, Long statusId, ProcessingActionEnum processingAction) {
+        return null;
     }
 }

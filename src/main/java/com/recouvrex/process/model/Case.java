@@ -24,6 +24,11 @@ public class Case extends BaseEntity {
     @JoinColumn(name="procedure_id")
     private Procedure procedure;
 
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name="thirdparty_id")
+    private ThirdParty thirdParty;
+
     private LocalDate startDate; //Date de début
 
     private BigDecimal principalAmount; //Le montant initial de la dette ou de l'obligation à récupérer, sans inclure les intérêts, les frais de retard ou d'autres frais supplémentaires.
@@ -37,6 +42,8 @@ public class Case extends BaseEntity {
     private BigDecimal commissionAmount; //Montant de la commission à payer à l'agent de recouvrement
 
     private BigDecimal insuranceSettlementAmout; //Le montant à récupérer auprès de l'assurance
+
+    private Contributor contributor;
 }
 
 

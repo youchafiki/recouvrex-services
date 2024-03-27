@@ -32,12 +32,12 @@
     </bpmn:exclusiveGateway>
     <bpmn:exclusiveGateway id="Gateway_0w9ebcy">
       <bpmn:incoming>Flow_0bdmt9n</bpmn:incoming>
-      <bpmn:outgoing>Flow_1gwkabm</bpmn:outgoing>
       <bpmn:outgoing>Flow_1xrvh48</bpmn:outgoing>
+      <bpmn:outgoing>Flow_17o9vrz</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_06wznzq" sourceRef="Event_0zfcxo6" targetRef="Gateway_19lzjh7" />
     <bpmn:sequenceFlow id="Flow_0cgflpf" name="confirmation" sourceRef="Gateway_1awtiyl" targetRef="decide-on-action">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">{{actionConfirmed==true}}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${processingAction=="CONFIRME_ACTION"}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_12h6l2w" sourceRef="decide-on-action" targetRef="Gateway_185x3m8" />
     <bpmn:sequenceFlow id="Flow_1darvl7" name="promesse ou relance" sourceRef="Gateway_0o380hf" targetRef="Gateway_19lzjh7">
@@ -46,12 +46,12 @@
     <bpmn:sequenceFlow id="Flow_0aineqe" sourceRef="Gateway_0jjtjpo" targetRef="Gateway_19lzjh7" />
     <bpmn:sequenceFlow id="Flow_0r4ch8o" sourceRef="Gateway_19lzjh7" targetRef="follow-collect" />
     <bpmn:sequenceFlow id="Flow_1y6o4a0" name="rejet action" sourceRef="Gateway_1awtiyl" targetRef="Gateway_0jjtjpo">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">{{actionConfirmed==false}}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">{{processingAction==REJECT_ACTION}}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_1aoe5qf" name="suivi" sourceRef="Gateway_185x3m8" targetRef="Gateway_0jjtjpo">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">{{continuecollect==true}}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${procedureId==1}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_0bdmt9n" name="déclassement" sourceRef="Gateway_185x3m8" targetRef="Gateway_0w9ebcy">
+    <bpmn:sequenceFlow id="Flow_0bdmt9n" sourceRef="Gateway_185x3m8" targetRef="Gateway_0w9ebcy">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">{{continuecollect==false}}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_0dz2tyl" sourceRef="follow-collect" targetRef="Gateway_0o380hf" />
@@ -59,9 +59,6 @@
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${followingAction=="TO_CONFIRM"}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_0lxt83i" sourceRef="process-collect-action" targetRef="Gateway_1awtiyl" />
-    <bpmn:sequenceFlow id="Flow_1gwkabm" sourceRef="Gateway_0w9ebcy" targetRef="sinistre-process">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">{{downgrading==true}}</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
     <bpmn:userTask id="follow-collect" name="suivre le recouvrement">
       <bpmn:extensionElements>
         <camunda:properties>
@@ -80,21 +77,27 @@
       <bpmn:outgoing>Flow_12h6l2w</bpmn:outgoing>
     </bpmn:userTask>
     <bpmn:callActivity id="sinistre-process" name="sinistre process" calledElement="sinister-process">
-      <bpmn:incoming>Flow_1gwkabm</bpmn:incoming>
+      <bpmn:incoming>Flow_17o9vrz</bpmn:incoming>
     </bpmn:callActivity>
     <bpmn:sequenceFlow id="Flow_1xrvh48" name="décès || invalidité" sourceRef="Gateway_0w9ebcy" targetRef="process-contentieux">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">{{downgrading==false}}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${procedure==3}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:callActivity id="process-contentieux" name="process contentieux" calledElement="litigation-process">
       <bpmn:incoming>Flow_1xrvh48</bpmn:incoming>
     </bpmn:callActivity>
+    <bpmn:sequenceFlow id="Flow_17o9vrz" name="reclassement" sourceRef="Gateway_0w9ebcy" targetRef="sinistre-process">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${procedure==2}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="recouvrex-process">
-      <bpmndi:BPMNEdge id="Flow_1gwkabm_di" bpmnElement="Flow_1gwkabm">
-        <di:waypoint x="1015" y="440" />
-        <di:waypoint x="910" y="440" />
-        <di:waypoint x="910" y="490" />
+      <bpmndi:BPMNEdge id="Flow_1xrvh48_di" bpmnElement="Flow_1xrvh48">
+        <di:waypoint x="1065" y="440" />
+        <di:waypoint x="1180" y="440" />
+        <di:waypoint x="1180" y="490" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1079" y="423" width="84" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0lxt83i_di" bpmnElement="Flow_0lxt83i">
         <di:waypoint x="790" y="230" />
@@ -152,14 +155,6 @@
           <dc:Bounds x="388" y="316" width="64" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1xrvh48_di" bpmnElement="Flow_1xrvh48">
-        <di:waypoint x="1065" y="440" />
-        <di:waypoint x="1180" y="440" />
-        <di:waypoint x="1180" y="490" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1079" y="423" width="84" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_12h6l2w_di" bpmnElement="Flow_12h6l2w">
         <di:waypoint x="1040" y="270" />
         <di:waypoint x="1040" y="318" />
@@ -174,6 +169,14 @@
       <bpmndi:BPMNEdge id="Flow_06wznzq_di" bpmnElement="Flow_06wznzq">
         <di:waypoint x="188" y="230" />
         <di:waypoint x="265" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_17o9vrz_di" bpmnElement="Flow_17o9vrz">
+        <di:waypoint x="1015" y="440" />
+        <di:waypoint x="910" y="440" />
+        <di:waypoint x="910" y="490" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="931" y="422" width="66" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Event_0zfcxo6_di" bpmnElement="Event_0zfcxo6">
         <dc:Bounds x="152" y="212" width="36" height="36" />
@@ -193,6 +196,9 @@
       <bpmndi:BPMNShape id="Gateway_1awtiyl_di" bpmnElement="Gateway_1awtiyl" isMarkerVisible="true">
         <dc:Bounds x="855" y="205" width="50" height="50" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0w9ebcy_di" bpmnElement="Gateway_0w9ebcy" isMarkerVisible="true">
+        <dc:Bounds x="1015" y="415" width="50" height="50" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_10ulh3f_di" bpmnElement="follow-collect">
         <dc:Bounds x="370" y="190" width="100" height="80" />
       </bpmndi:BPMNShape>
@@ -202,14 +208,11 @@
       <bpmndi:BPMNShape id="Activity_1xd4n4k_di" bpmnElement="decide-on-action">
         <dc:Bounds x="990" y="190" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1lhvi05_di" bpmnElement="process-contentieux">
-        <dc:Bounds x="1130" y="490" width="100" height="80" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1n9m6bd_di" bpmnElement="sinistre-process">
         <dc:Bounds x="860" y="490" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_0w9ebcy_di" bpmnElement="Gateway_0w9ebcy" isMarkerVisible="true">
-        <dc:Bounds x="1015" y="415" width="50" height="50" />
+      <bpmndi:BPMNShape id="Activity_1lhvi05_di" bpmnElement="process-contentieux">
+        <dc:Bounds x="1130" y="490" width="100" height="80" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

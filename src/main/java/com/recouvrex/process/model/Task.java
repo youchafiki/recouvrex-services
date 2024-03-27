@@ -30,6 +30,6 @@ public class Task extends BaseEntity{
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "profile_id")
     private Profile profile;
-    private
+    private String taskObject;
 
 }

@@ -1,9 +1,9 @@
 package com.recouvrex.process.controller;
 
+import com.recouvrex.process.model.Status;
 import com.recouvrex.process.model.Task;
-import com.recouvrex.process.model.Tutorial;
+import com.recouvrex.process.service.StatusService;
 import com.recouvrex.process.service.TaskService;
-import com.recouvrex.process.service.TutorialService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -11,23 +11,21 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.camunda.bpm.engine.impl.util.CollectionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
-@Tag(name = "Task", description = "Tutorial management APIs")
+@Tag(name = "Status", description = "Status management APIs")
 //@CrossOrigin(origins = "http://localhost:8089")
 @RestController
-@RequestMapping("/api")
-public class TaskController {
+@RequestMapping("/api/Status")
+public class StatusController {
 
 	@Autowired
-	TaskService taskService;
+	StatusService statusService;
 
 
 	@Operation(summary = "Create a new Tutorial"
@@ -36,29 +34,29 @@ public class TaskController {
 					@ApiResponse(responseCode = "201", content = {
 									@Content(schema = @Schema(implementation = Task.class), mediaType = "application/json") }),
 					@ApiResponse(responseCode = "500", content = { @Content(schema = @Schema()) }) })
-	@PostMapping("/Task")
-	public ResponseEntity<Task> createTask(@RequestBody Task task) {
+	@PostMapping("/")
+	public ResponseEntity<Status> createTask(@RequestBody Status status) {
 		try {
-			Task _task = taskService.save(task);
+			Status _status = statusService.save(status);
 
-			return new ResponseEntity<>(_task, HttpStatus.CREATED);
+			return new ResponseEntity<>(_status, HttpStatus.CREATED);
 		} catch (Exception e) {
 			//e.printStackTrace();
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
-	@Operation(summary = "Retrieve all Task by caseId"
+    @Operation(summary = "Retrieve all Status"
 			, security = @SecurityRequirement(name = "bearerAuth"))
 	@ApiResponses({
 					@ApiResponse(responseCode = "200", content = {
-									@Content(schema = @Schema(implementation = Task.class), mediaType = "application/json") }),
-					@ApiResponse(responseCode = "204", description = "There are no Task this caseId", content = {
+									@Content(schema = @Schema(implementation = Status.class), mediaType = "application/json") }),
+					@ApiResponse(responseCode = "204", description = "No status found", content = {
 									@Content(schema = @Schema()) }),
 					@ApiResponse(responseCode = "500", content = { @Content(schema = @Schema()) }) })
-	@GetMapping("/task/{caseId}")
-	public ResponseEntity<List<Task>> getTaskByCaseId(@PathVariable("caseId") Long CaseId) {
-		return new ResponseEntity<>(taskService.findByCaseId(CaseId), HttpStatus.OK);
+	@GetMapping("/")
+	public ResponseEntity<List<Status>> listStatus() {
+		return new ResponseEntity<>(statusService.listStatus(), HttpStatus.OK);
 	}
 	/*
 	@Operation(summary = "Delete a Tutorial by Id", tags = { "tutorials", "delete" },
