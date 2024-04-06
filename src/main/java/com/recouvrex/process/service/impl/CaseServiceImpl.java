@@ -5,8 +5,16 @@ import com.recouvrex.process.model.enums.FollowingActionEnum;
 import com.recouvrex.process.model.enums.ProcessingActionEnum;
 import com.recouvrex.process.model.enums.StatusEnum;
 import com.recouvrex.process.repository.CaseRepository;
+import com.recouvrex.process.repository.StatusRepository;
 import com.recouvrex.process.service.CaseService;
 import com.recouvrex.process.utils.IdentificationTool;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService;
@@ -25,6 +33,12 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     CaseRepository caseRepository;
+
+    @Autowired
+    StatusRepository statusRepository;
+
+    @Autowired
+    ProcedureRepository
 
     @Autowired
     RuntimeService runtimeService;
@@ -99,7 +113,28 @@ public class CaseServiceImpl implements CaseService {
     }
     @Override
     public List<Case> filterCase(String caseId, Long statusId, Long procedureId){
-        return  caseRepository.findByCaseIdContainingAndStatusAndProcedure( caseId, statusId, procedureId);
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+
+        CriteriaQuery<Case> criteriaQuery =
+                criteriaBuilder.createQuery(Case.class);
+        Root<Case> root = criteriaQuery.from(Case.class);
+        Predicate predicateForCaseId=null;
+        Predicate predicateForStatusId=null;
+        Predicate predicateForProcedureId=null;
+        predicateForCaseId = criteriaBuilder.like(root.get("caseId"), caseId);
+        if(statusId!=null){
+
+             predicateForStatusId
+                    = criteriaBuilder.equal(root.get("statusId"), statusId);
+        }
+        if(procedureId!=null){
+             predicateForProcedureId
+                    = criteriaBuilder.equal(root.get("procedureId"), procedureId);
+        }
+        Predicate finalPredicate = criteriaBuilder.and(predicateForCaseId, predicateForStatusId, predicateForProcedureId);
+        criteriaQuery.select(root).where(finalPredicate);
+        return entityManager.createQuery(criteriaQuery).getResultList();
+        //return  caseRepository.findByCaseIdContainingAndStatusAndProcedure( caseId, statusId, procedureId);
     }
 
     @Override
@@ -121,4 +156,7 @@ public class CaseServiceImpl implements CaseService {
     public Case processCollectAction(String caseId, Long procedureId, Long statusId, ProcessingActionEnum processingAction) {
         return null;
     }
+    @PersistenceContext
+    private EntityManager entityManager;
+
 }
