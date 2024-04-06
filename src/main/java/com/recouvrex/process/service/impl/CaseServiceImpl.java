@@ -1,10 +1,13 @@
 package com.recouvrex.process.service.impl;
 
 import com.recouvrex.process.model.Case;
+import com.recouvrex.process.model.Procedure;
+import com.recouvrex.process.model.Status;
 import com.recouvrex.process.model.enums.FollowingActionEnum;
 import com.recouvrex.process.model.enums.ProcessingActionEnum;
 import com.recouvrex.process.model.enums.StatusEnum;
 import com.recouvrex.process.repository.CaseRepository;
+import com.recouvrex.process.repository.ProcedureRepository;
 import com.recouvrex.process.repository.StatusRepository;
 import com.recouvrex.process.service.CaseService;
 import com.recouvrex.process.utils.IdentificationTool;
@@ -38,7 +41,7 @@ public class CaseServiceImpl implements CaseService {
     StatusRepository statusRepository;
 
     @Autowired
-    ProcedureRepository
+    ProcedureRepository procedureRepository;
 
     @Autowired
     RuntimeService runtimeService;
@@ -121,15 +124,16 @@ public class CaseServiceImpl implements CaseService {
         Predicate predicateForCaseId=null;
         Predicate predicateForStatusId=null;
         Predicate predicateForProcedureId=null;
-        predicateForCaseId = criteriaBuilder.like(root.get("caseId"), caseId);
+        predicateForCaseId = criteriaBuilder.like(root.get("caseId"), "%"+caseId+"%");
         if(statusId!=null){
-
+        Status status = statusRepository.findById(statusId).orElse(null);
              predicateForStatusId
-                    = criteriaBuilder.equal(root.get("statusId"), statusId);
+                    = criteriaBuilder.equal(root.get("status"), status);
         }
         if(procedureId!=null){
+            Procedure procedure = procedureRepository.findById(procedureId).orElse(null);
              predicateForProcedureId
-                    = criteriaBuilder.equal(root.get("procedureId"), procedureId);
+                    = criteriaBuilder.equal(root.get("procedure"), procedure);
         }
         Predicate finalPredicate = criteriaBuilder.and(predicateForCaseId, predicateForStatusId, predicateForProcedureId);
         criteriaQuery.select(root).where(finalPredicate);
