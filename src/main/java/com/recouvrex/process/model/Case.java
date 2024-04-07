@@ -29,6 +29,11 @@ public class Case extends BaseEntity {
     @JoinColumn(name="thirdparty_id")
     private ThirdParty thirdParty;
 
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name="user_id")
+    private User assignedAgent;
+
     private LocalDate startDate; //Date de début
 
     private BigDecimal principalAmount; //Le montant initial de la dette ou de l'obligation à récupérer, sans inclure les intérêts, les frais de retard ou d'autres frais supplémentaires.

@@ -10,6 +10,7 @@ import com.recouvrex.process.repository.CaseRepository;
 import com.recouvrex.process.repository.ProcedureRepository;
 import com.recouvrex.process.repository.StatusRepository;
 import com.recouvrex.process.service.CaseService;
+import com.recouvrex.process.utils.CaseSpecifications;
 import com.recouvrex.process.utils.IdentificationTool;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -26,6 +27,7 @@ import org.camunda.bpm.engine.runtime.Execution;
 import org.camunda.bpm.engine.runtime.ProcessInstanceWithVariables;
 import org.camunda.bpm.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -116,35 +118,9 @@ public class CaseServiceImpl implements CaseService {
         return (Case) runtimeService.getVariable(execution.getId(), "case");
     }
     @Override
-    public List<Case> filterCase(String caseId, Long statusId, Long procedureId){
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-
-        CriteriaQuery<Case> criteriaQuery =
-                criteriaBuilder.createQuery(Case.class);
-        Root<Case> root = criteriaQuery.from(Case.class);
-        Predicate predicateForCaseId=null;
-        Predicate predicateForStatusId=null;
-        Predicate predicateForProcedureId=null;
-        if(!StringUtils.isBlank(caseId)) {
-            predicateForCaseId = criteriaBuilder.like(root.get("caseId"), "%" + caseId + "%");
-        } else {
-            predicateForCaseId = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
-        }
-        if(statusId!=null ){
-        Status status = statusRepository.findById(statusId).orElse(null);
-             predicateForStatusId
-                    = criteriaBuilder.equal(root.get("status"), status);
-        } else predicateForStatusId = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
-
-        if(procedureId!=null){
-            Procedure procedure = procedureRepository.findById(procedureId).orElse(null);
-             predicateForProcedureId
-                    = criteriaBuilder.equal(root.get("procedure"), procedure);
-        } else predicateForProcedureId = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
-        Predicate finalPredicate = criteriaBuilder.and(predicateForCaseId, predicateForStatusId, predicateForProcedureId);
-        criteriaQuery.select(root).where(finalPredicate);
-        return entityManager.createQuery(criteriaQuery).getResultList();
-        //return  caseRepository.findByCaseIdContainingAndStatusAndProcedure( caseId, statusId, procedureId);
+    public List<Case> filterCase(String caseId, Long statusId, Long procedureId, Long userId){
+        Specification<Case> spec = CaseSpecifications.withCriteria(caseId, statusId, procedureId, userId);
+        return caseRepository.findAll(spec);
     }
 
     @Override
