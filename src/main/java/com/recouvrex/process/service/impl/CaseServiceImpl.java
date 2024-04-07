@@ -18,6 +18,7 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import org.apache.commons.lang3.StringUtils;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService;
@@ -124,17 +125,22 @@ public class CaseServiceImpl implements CaseService {
         Predicate predicateForCaseId=null;
         Predicate predicateForStatusId=null;
         Predicate predicateForProcedureId=null;
-        predicateForCaseId = criteriaBuilder.like(root.get("caseId"), "%"+caseId+"%");
-        if(statusId!=null){
+        if(!StringUtils.isBlank(caseId)) {
+            predicateForCaseId = criteriaBuilder.like(root.get("caseId"), "%" + caseId + "%");
+        } else {
+            predicateForCaseId = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
+        }
+        if(statusId!=null ){
         Status status = statusRepository.findById(statusId).orElse(null);
              predicateForStatusId
                     = criteriaBuilder.equal(root.get("status"), status);
-        }
+        } else predicateForStatusId = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
+
         if(procedureId!=null){
             Procedure procedure = procedureRepository.findById(procedureId).orElse(null);
              predicateForProcedureId
                     = criteriaBuilder.equal(root.get("procedure"), procedure);
-        }
+        } else predicateForProcedureId = criteriaBuilder.isTrue(criteriaBuilder.literal(true));
         Predicate finalPredicate = criteriaBuilder.and(predicateForCaseId, predicateForStatusId, predicateForProcedureId);
         criteriaQuery.select(root).where(finalPredicate);
         return entityManager.createQuery(criteriaQuery).getResultList();

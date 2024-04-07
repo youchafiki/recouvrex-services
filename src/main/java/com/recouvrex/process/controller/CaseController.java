@@ -105,8 +105,8 @@ public class CaseController {
 			@ApiResponse(responseCode = "201", content = {
 					@Content(schema = @Schema(implementation = Case.class), mediaType = "application/json") }),
 			@ApiResponse(responseCode = "500", content = { @Content(schema = @Schema()) }) })
-	@GetMapping("/filter/{caseId}/status/{status}/procedure/{procedure}")
-	public ResponseEntity<List<Case>> filterCase(@PathVariable("caseId") String caseId, @PathVariable("status") Long statusId, @PathVariable("procedure") Long procedureId) {
+	@GetMapping("/filter/")
+	public ResponseEntity<List<Case>> filterCase(@RequestParam(value = "caseId", required = false) String caseId, @RequestParam(value = "status", required = false) Long statusId, @RequestParam(value = "procedure", required = false) Long procedureId) {
 		List<Case> caseList = caseService.filterCase(caseId, statusId, procedureId);
 		return new ResponseEntity<>(caseList, HttpStatus.OK);
 	}
