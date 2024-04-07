@@ -22,5 +22,5 @@ public class User extends BaseEntity{
     private Profile profile;
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "manager_id")
-    private User Manager;
+    private User manager;
 }

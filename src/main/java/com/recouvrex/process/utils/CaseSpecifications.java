@@ -30,7 +30,14 @@ public class CaseSpecifications {
 
                 if (userId != null) {
                     Join<Case, User> userJoin = root.join("assignedAgent");
-                    predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(userJoin.get("id"), userId));
+                    //predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(userJoin.get("id"), userId));
+                    Predicate userPredicate = criteriaBuilder.conjunction();
+                    userPredicate = criteriaBuilder.and(userPredicate, criteriaBuilder.equal(userJoin.get("id"), userId));
+                    Join<Case, User> assignedJoin = root.join("assignedAgent");
+                    Join<User, User> managerJoin = assignedJoin.join("manager");
+                    userPredicate =criteriaBuilder.or(userPredicate, criteriaBuilder.equal(managerJoin.get("id"), userId));
+                    predicate = criteriaBuilder.and(predicate, userPredicate);
+
                 }
 
                 return predicate;
