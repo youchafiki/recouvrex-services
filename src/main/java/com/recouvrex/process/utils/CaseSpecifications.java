@@ -20,17 +20,17 @@ public class CaseSpecifications {
                 }
                 if (statusId != null) {
                     Join<Case, Status> statusJoin = root.join("status");
-                    predicate = criteriaBuilder.and(predicate,  criteriaBuilder.equal(statusJoin.get("id"), statusId));
+                    predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(statusJoin.get("id"), statusId));
                 }
 
                 if (procedureId != null) {
                     Join<Case, Procedure> procedureJoin = root.join("procedure");
-                    predicate = criteriaBuilder.and(predicate,  criteriaBuilder.equal(procedureJoin.get("id"), procedureId));
+                    predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(procedureJoin.get("id"), procedureId));
                 }
 
                 if (userId != null) {
-                    Join<Case, User> userJoin = root.join("user");
-                    predicate = criteriaBuilder.and(predicate,  criteriaBuilder.equal(userJoin.get("id"), userId));
+                    Join<Case, User> userJoin = root.join("assignedAgent");
+                    predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(userJoin.get("id"), userId));
                 }
 
                 return predicate;
