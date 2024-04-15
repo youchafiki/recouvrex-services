@@ -108,6 +108,9 @@ public class CaseServiceImpl implements CaseService {
         Execution execution = runtimeService.createExecutionQuery().processInstanceBusinessKey(caseId).singleResult();
         runtimeService.setVariable(execution.getId(), "followingAction", followingAction);
         runtimeService.setVariable(execution.getId(), "statusId", statusId);
+        //Case _case =caseRepository.findByCaseId(caseId).get(0);
+        //_case.setStatus();
+        //caseRepository.save(_case);
 
         Task task = processInEngine.getTaskService().createTaskQuery()
                 .processInstanceBusinessKey(caseId)
